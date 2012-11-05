@@ -57,5 +57,5 @@ end
 private 
 
 def the_gallery
-  @gallery = Gallery.find(params["gallery_id"])
+  @gallery = Gallery.find_by_id(params["gallery_id"])
 end

@@ -1,5 +1,6 @@
 class GalleriesController < ApplicationController
-
+  skip_before_filter  :verify_authenticity_token, :only => [:create]
+  
   def index
     @galleries = Gallery.all
 
@@ -37,15 +38,15 @@ class GalleriesController < ApplicationController
 
   def create
     @gallery = Gallery.new(params[:gallery])
-
-    respond_to do |format|
-      if @gallery.save
-        format.html { redirect_to galleries_url, notice: 'Gallery was successfully created.' }
-        format.json { render json: @gallery, status: :created, location: @gallery }
-      else
-        format.html { render action: "new" }
-        format.json { render json: @gallery.errors, status: :unprocessable_entity }
-      end
+    # @gallery.user = current_user # set the gallery to be the current user
+    if @gallery.save
+      json_result = {:id => @gallery.id}.to_json
+      logger.debug(json_result);
+      render :status => :created, :text => json_result
+    else
+      json_result = {:document_id => nil}.to_json
+      logger.debug(json_result);
+      render :status => :unprocessable_entity, :text => json_result
     end
   end
 
